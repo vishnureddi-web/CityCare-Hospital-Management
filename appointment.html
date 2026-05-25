@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Appointment - CityCare</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+<link rel="icon" href="images/logo.png">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins';}
+body{background:#f4f6fb;}
+
+nav{
+display:flex;justify-content:space-between;
+padding:15px 40px;background:#0b132b;color:white;
+}
+
+.hero{
+height:25vh;
+display:flex;align-items:center;justify-content:center;
+background:linear-gradient(rgba(0,0,0,0.6),rgba(90,99,216,0.6)),
+url('https://images.unsplash.com/photo-1588776814546-1ffcf47267a5');
+color:white;font-size:24px;
+}
+
+.container{max-width:600px;margin:40px auto;}
+.form-box{
+background:white;padding:30px;border-radius:12px;
+box-shadow:0 6px 20px rgba(0,0,0,0.1);
+}
+
+input,select,textarea{
+width:100%;padding:12px;margin:10px 0;
+border-radius:8px;border:1px solid #ddd;
+}
+
+button{
+width:100%;padding:14px;
+background:#5a63d8;color:white;border:none;
+border-radius:8px;cursor:pointer;
+}
+
+button:disabled{
+background:#aaa;
+cursor:not-allowed;
+}
+
+.success{text-align:center;color:green;margin-top:10px;display:none;}
+.error{text-align:center;color:red;margin-top:10px;display:none;}
+
+.doctor-box{
+background:#eef1ff;padding:10px;border-radius:6px;
+margin-bottom:10px;text-align:center;
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+<h2>CityCare</h2>
+</nav>
+
+<div class="hero">Book Appointment</div>
+
+<div class="container">
+<div class="form-box">
+
+<h2>Appointment Form</h2>
+
+<div class="doctor-box" id="doctorDisplay"></div>
+
+<form id="form">
+
+<input id="name" placeholder="Full Name" required>
+<input id="email" type="email" placeholder="Email" required>
+<input id="phone" placeholder="Phone Number" required>
+
+<input type="hidden" id="doctor">
+
+<input type="date" id="date" required>
+
+<select id="time" required>
+<option value="">Select Time</option>
+<option>10:00 AM</option>
+<option>12:00 PM</option>
+<option>3:00 PM</option>
+<option>6:00 PM</option>
+</select>
+
+<textarea id="message" placeholder="Problem"></textarea>
+
+<button id="btn">Pay & Book Appointment</button>
+
+</form>
+
+<p class="success" id="success">✅ Appointment Booked</p>
+<p class="error" id="error"></p>
+
+</div>
+</div>
+
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script>
+
+/* ✅ FIXED CONFIG ONLY */
+const firebaseConfig = {
+  apiKey: "AIzaSyBgpOLahDrFHB32QJu_Z7OwGhI90jB9jGE",
+  authDomain: "citycare-vishnu-2026.firebaseapp.com",
+  projectId: "citycare-vishnu-2026",
+  storageBucket: "citycare-vishnu-2026.firebasestorage.app",
+  messagingSenderId: "123554182061",
+  appId: "1:123554182061:web:b06db741f262adac67a724"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.firestore();
+const auth = firebase.auth();
+
+/* LOAD DOCTOR */
+let doctor=localStorage.getItem("doctorName");
+
+if(!doctor){
+alert("Select doctor first");
+location.href="doctors.html";
+}
+
+document.getElementById("doctorDisplay").innerText="Doctor: "+doctor;
+document.getElementById("doctor").value=doctor;
+
+/* MIN DATE */
+let today=new Date().toISOString().split("T")[0];
+document.getElementById("date").min=today;
+
+/* SUBMIT */
+document.getElementById("form").addEventListener("submit",e=>{
+e.preventDefault();
+
+let btn=document.getElementById("btn");
+btn.disabled=true;
+btn.innerText="Processing...";
+
+let user=auth.currentUser;
+if(!user){
+alert("Login first");
+location.href="login.html";
+return;
+}
+
+let phone=document.getElementById("phone").value;
+
+/* PHONE VALIDATION */
+if(!/^[6-9]\d{9}$/.test(phone)){
+showError("Invalid phone number");
+btn.disabled=false;
+btn.innerText="Pay & Book Appointment";
+return;
+}
+
+/* RAZORPAY */
+let options={
+key:"rzp_test_SgsCReZvG8w523",
+amount:50000,
+currency:"INR",
+name:"CityCare",
+
+handler:function(res){
+
+db.collection("appointments").add({
+name:name.value,
+email:email.value,
+phone,
+doctor,
+date:date.value,
+time:time.value,
+message:message.value,
+userId:user.uid,
+status:"Pending",
+paymentId:res.razorpay_payment_id,
+createdAt:new Date()
+})
+.then(()=>{
+document.getElementById("success").style.display="block";
+
+setTimeout(()=>{
+location.href="dashboard.html";
+},2000);
+})
+.catch(()=>{
+showError("Database error");
+btn.disabled=false;
+btn.innerText="Pay & Book Appointment";
+});
+
+}
+
+};
+
+new Razorpay(options).open();
+
+});
+
+/* ERROR */
+function showError(msg){
+let e=document.getElementById("error");
+e.innerText=msg;
+e.style.display="block";
+}
+
+</script>
+
+</body>
+</html>

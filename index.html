@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CityCare Hospital</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="icon" href="images/logo.png">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI';}
+body{background:#f4f6fb;}
+
+/* NAV */
+nav{
+display:flex;justify-content:space-between;align-items:center;
+padding:18px 50px;background:#0b132b;color:white;
+}
+nav a{color:white;margin-left:25px;text-decoration:none;}
+nav a:hover{color:#00c6ff;}
+
+/* HERO */
+.hero{
+height:75vh;display:flex;align-items:center;justify-content:center;
+text-align:center;color:white;position:relative;
+}
+.bg-video{
+position:absolute;width:100%;height:100%;object-fit:cover;z-index:-1;
+}
+.hero::before{
+content:"";position:absolute;inset:0;background:rgba(0,0,0,0.5);
+}
+.hero-content{position:relative;}
+.hero h1{font-size:42px;}
+.hero button{
+margin-top:15px;padding:12px 25px;
+background:#5a63d8;color:white;border:none;border-radius:25px;
+cursor:pointer;
+}
+
+/* SECTION */
+.section{padding:60px 20px;text-align:center;}
+.section h2{margin-bottom:30px;color:#333;}
+
+/* GRID */
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:25px;max-width:1100px;margin:auto;
+}
+
+/* CARD */
+.card{
+background:white;padding:25px;border-radius:15px;
+box-shadow:0 4px 15px rgba(0,0,0,0.08);
+cursor:pointer;transition:0.3s;
+}
+.card:hover{transform:translateY(-10px);}
+.card i{font-size:35px;color:#5a63d8;margin-bottom:10px;}
+
+/* SPECIALIZATION */
+.spec-card{
+background:white;padding:25px;border-radius:15px;
+box-shadow:0 4px 15px rgba(0,0,0,0.08);
+cursor:pointer;transition:0.3s;
+}
+.spec-card:hover{
+transform:scale(1.05);
+background:#5a63d8;color:white;
+}
+
+/* CALLBACK */
+.callback{
+background:#eef3f9;padding:60px 20px;text-align:center;
+}
+.callback-box{
+background:white;padding:30px;border-radius:15px;
+max-width:400px;margin:auto;
+box-shadow:0 5px 20px rgba(0,0,0,0.1);
+}
+.callback input{
+width:100%;padding:12px;margin:10px 0;
+border-radius:8px;border:1px solid #ccc;
+}
+.callback button{
+width:100%;padding:12px;
+background:#5a63d8;color:white;border:none;
+border-radius:8px;cursor:pointer;
+}
+#msg{margin-top:10px;}
+
+/* FOOTER */
+footer{
+background:#0b132b;color:white;padding:50px 20px;
+}
+.footer-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:30px;
+max-width:1100px;margin:auto;
+}
+footer h4{color:#00c6ff;margin-bottom:10px;}
+footer p{color:#ccc;font-size:14px;margin:5px 0;}
+
+/* WHATSAPP */
+.whatsapp{
+position:fixed;bottom:20px;right:20px;
+background:#25D366;color:white;
+padding:15px;border-radius:50%;
+font-size:20px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAV -->
+<nav>
+<h2>CityCare</h2>
+<div>
+<a href="#">Home</a>
+<a href="services.html">Services</a>
+<a href="doctors.html">Doctors</a>
+<a href="contact.html">Contact</a>
+</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+<video autoplay muted loop class="bg-video">
+<source src="videos/banner.mp4" type="video/mp4">
+</video>
+<div class="hero-content">
+<h1>CityCare Hospital</h1>
+<p>Your Health, Our Priority</p>
+<button onclick="go('appointment.html')">Book Appointment</button>
+</div>
+</section>
+
+<!-- FEATURES -->
+<section class="section">
+<h2>Our Services</h2>
+<div class="grid">
+<div class="card" onclick="go('appointment.html')">
+<i class="fas fa-calendar-check"></i>
+<p>Book Appointment</p>
+</div>
+
+<div class="card" onclick="go('services.html')">
+<i class="fas fa-stethoscope"></i>
+<p>Medical Services</p>
+</div>
+
+<div class="card" onclick="go('doctors.html')">
+<i class="fas fa-user-md"></i>
+<p>Expert Doctors</p>
+</div>
+</div>
+</section>
+
+<!-- SPECIALIZATION -->
+<section class="section">
+<h2>Specializations</h2>
+
+<div class="grid">
+
+<div class="spec-card" onclick="goSpec('Cardiology')">Cardiology</div>
+<div class="spec-card" onclick="goSpec('Neurology')">Neurology</div>
+<div class="spec-card" onclick="goSpec('Orthopedic')">Orthopedic</div>
+<div class="spec-card" onclick="goSpec('Gastro')">Gastro</div>
+<div class="spec-card" onclick="goSpec('Nephrology')">Nephrology</div>
+<div class="spec-card" onclick="goSpec('Mother & Child')">Mother & Child</div>
+
+</div>
+</section>
+
+<!-- CALLBACK -->
+<section class="callback">
+<h2>Request a Call Back</h2>
+
+<div class="callback-box">
+<input id="name" placeholder="Your Name">
+<input id="phone" placeholder="Phone Number">
+<button onclick="saveCallback()">Submit</button>
+<p id="msg"></p>
+</div>
+
+</section>
+
+<!-- FOOTER -->
+<footer>
+<div class="footer-grid">
+
+<div>
+<h4>CityCare</h4>
+<p>Advanced healthcare with expert doctors.</p>
+</div>
+
+<div>
+<h4>Quick Links</h4>
+<p>Home</p>
+<p>Services</p>
+<p>Doctors</p>
+</div>
+
+<div>
+<h4>Contact</h4>
+<p>📞 9876543210</p>
+<p>📧 citycare@gmail.com</p>
+</div>
+
+</div>
+</footer>
+
+<!-- WHATSAPP -->
+<a href="https://wa.me/919876543210" class="whatsapp">
+<i class="fab fa-whatsapp"></i>
+</a>
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script>
+const firebaseConfig = {
+apiKey: "AIzaSyBgpOLahDrFHB32QJu_Z7OwGhI90jB9jGE",
+authDomain: "citycare-vishnu-2026.firebaseapp.com",
+projectId: "citycare-vishnu-2026"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
+/* NAV */
+function go(page){
+window.location.href = page;
+}
+
+/* SPECIALIZATION */
+function goSpec(name){
+localStorage.setItem("specialization", name);
+window.location.href="specialization.html";
+}
+
+/* CALLBACK */
+function saveCallback(){
+
+let name=document.getElementById("name").value.trim();
+let phone=document.getElementById("phone").value.trim();
+let msg=document.getElementById("msg");
+
+if(name===""||phone===""){
+msg.innerText="Fill all fields";
+msg.style.color="red";
+return;
+}
+
+db.collection("callbacks").add({
+name,phone,createdAt:new Date()
+})
+.then(()=>{
+msg.innerText="Request Sent!";
+msg.style.color="green";
+})
+.catch(()=>{
+msg.innerText="Error!";
+msg.style.color="red";
+});
+
+}
+</script>
+
+</body>
+</html>
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CityCare Hospital</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="icon" href="images/logo.png">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI';}
+body{background:#f4f6fb;}
+
+/* NAV */
+nav{
+display:flex;justify-content:space-between;align-items:center;
+padding:18px 50px;background:#0b132b;color:white;
+}
+nav a{color:white;margin-left:25px;text-decoration:none;}
+nav a:hover{color:#00c6ff;}
+
+/* HERO */
+.hero{
+height:75vh;display:flex;align-items:center;justify-content:center;
+text-align:center;color:white;position:relative;
+}
+.bg-video{
+position:absolute;width:100%;height:100%;object-fit:cover;z-index:-1;
+}
+.hero::before{
+content:"";position:absolute;inset:0;background:rgba(0,0,0,0.5);
+}
+.hero-content{position:relative;}
+.hero h1{font-size:45px;}
+.hero button{
+margin-top:15px;padding:12px 25px;
+background:#5a63d8;color:white;border:none;border-radius:25px;
+cursor:pointer;
+}
+
+/* SECTION */
+.section{padding:70px 20px;text-align:center;}
+.section h2{margin-bottom:30px;}
+
+/* GRID */
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:25px;max-width:1100px;margin:auto;
+}
+
+/* CARD */
+.card{
+background:white;padding:25px;border-radius:15px;
+box-shadow:0 4px 15px rgba(0,0,0,0.08);
+cursor:pointer;transition:0.3s;
+}
+.card:hover{transform:translateY(-10px);}
+.card i{font-size:35px;color:#5a63d8;margin-bottom:10px;}
+
+/* ABOUT */
+.about{
+display:flex;gap:40px;align-items:center;
+max-width:1100px;margin:auto;
+flex-wrap:wrap;
+}
+.about img{
+width:400px;border-radius:15px;
+}
+.about-text{
+flex:1;text-align:left;
+}
+
+/* CHAIRMAN */
+.chairman{
+display:flex;gap:30px;align-items:center;
+max-width:900px;margin:auto;
+background:white;padding:30px;border-radius:15px;
+box-shadow:0 5px 20px rgba(0,0,0,0.1);
+}
+.chairman img{
+width:200px;border-radius:15px;
+}
+
+/* TESTIMONIAL */
+.testimonial-box{
+max-width:600px;margin:auto;
+background:white;padding:30px;border-radius:15px;
+box-shadow:0 5px 20px rgba(0,0,0,0.1);
+position:relative;
+}
+.testimonial p{
+font-style:italic;color:#555;
+}
+.testimonial h4{
+margin-top:10px;color:#5a63d8;
+}
+.slider-btn{
+margin-top:15px;
+}
+.slider-btn button{
+padding:8px 12px;margin:5px;border:none;
+background:#5a63d8;color:white;border-radius:5px;
+}
+
+/* CALLBACK */
+.callback{
+background:#eef3f9;padding:60px 20px;
+}
+.callback-box{
+background:white;padding:30px;border-radius:15px;
+max-width:400px;margin:auto;
+}
+.callback input{
+width:100%;padding:12px;margin:10px 0;
+border-radius:8px;border:1px solid #ccc;
+}
+.callback button{
+width:100%;padding:12px;background:#5a63d8;
+color:white;border:none;border-radius:8px;
+}
+
+/* FOOTER */
+footer{
+background:#0b132b;color:white;padding:50px;
+text-align:center;
+}
+
+/* WHATSAPP */
+.whatsapp{
+position:fixed;bottom:20px;right:20px;
+background:#25D366;color:white;
+padding:15px;border-radius:50%;
+font-size:20px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAV -->
+<nav>
+<h2>CityCare</h2>
+<div>
+<a href="#">Home</a>
+<a href="services.html">Services</a>
+<a href="doctors.html">Doctors</a>
+<a href="contact.html">Contact</a>
+</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+<video autoplay muted loop class="bg-video">
+<source src="videos/banner.mp4" type="video/mp4">
+</video>
+<div class="hero-content">
+<h1>CityCare Hospital</h1>
+<p>Your Health, Our Priority</p>
+<button onclick="go('appointment.html')">Book Appointment</button>
+</div>
+</section>
+
+<!-- ABOUT -->
+<section class="section">
+<h2>About Us</h2>
+<div class="about">
+<img src="https://images.unsplash.com/photo-1588776814546-1ffcf47267a5">
+<div class="about-text">
+<p>CityCare Hospital provides world-class healthcare with expert doctors and modern facilities. We ensure patient satisfaction and quality treatment.</p>
+</div>
+</div>
+</section>
+
+<!-- CHAIRMAN -->
+<section class="section">
+<h2>Chairman Message</h2>
+<div class="chairman">
+<img src="https://randomuser.me/api/portraits/men/50.jpg">
+<div>
+<p>"Our mission is to deliver trusted healthcare with compassion and innovation."</p>
+<h4>Dr. Reddy (Chairman)</h4>
+</div>
+</div>
+</section>
+
+<!-- SERVICES -->
+<section class="section">
+<h2>Our Services</h2>
+<div class="grid">
+<div class="card" onclick="go('services.html')">
+<i class="fas fa-stethoscope"></i>
+<p>Medical Services</p>
+</div>
+
+<div class="card" onclick="go('doctors.html')">
+<i class="fas fa-user-md"></i>
+<p>Doctors</p>
+</div>
+
+<div class="card" onclick="go('appointment.html')">
+<i class="fas fa-calendar-check"></i>
+<p>Book Appointment</p>
+</div>
+</div>
+</section>
+
+<!-- TESTIMONIAL -->
+<section class="section">
+<h2>What Our Patients Say</h2>
+
+<div class="testimonial-box">
+<div id="testimonial"></div>
+
+<div class="slider-btn">
+<button onclick="prev()">◀</button>
+<button onclick="next()">▶</button>
+</div>
+</div>
+</section>
+
+<!-- CALLBACK -->
+<section class="callback">
+<h2>Request Call Back</h2>
+<div class="callback-box">
+<input id="name" placeholder="Name">
+<input id="phone" placeholder="Phone">
+<button onclick="saveCallback()">Submit</button>
+<p id="msg"></p>
+</div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+<p>© 2026 CityCare Hospital</p>
+</footer>
+
+<!-- WHATSAPP -->
+<a href="https://wa.me/919876543210" class="whatsapp">
+<i class="fab fa-whatsapp"></i>
+</a>
+
+<script>
+
+/* NAV */
+function go(p){window.location.href=p;}
+
+/* TESTIMONIAL DATA */
+const data=[
+{text:"Great hospital service!",name:"Ravi"},
+{text:"Doctors are very good.",name:"Priya"},
+{text:"Best experience ever!",name:"Arjun"}
+];
+
+let i=0;
+
+function show(){
+document.getElementById("testimonial").innerHTML=
+`<div class="testimonial">
+<p>"${data[i].text}"</p>
+<h4>- ${data[i].name}</h4>
+</div>`;
+}
+
+function next(){i=(i+1)%data.length;show();}
+function prev(){i=(i-1+data.length)%data.length;show();}
+
+setInterval(next,3000);
+show();
+
+/* CALLBACK */
+function saveCallback(){
+let name=document.getElementById("name").value;
+let phone=document.getElementById("phone").value;
+document.getElementById("msg").innerText="Saved!";
+}
+
+</script>
+
+</body>
+</html>

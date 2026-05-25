@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Doctors - CityCare</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="icon" href="images/logo.png">
+
+<style>
+body{
+font-family:'Segoe UI',sans-serif;
+background:#f4f6fb;
+margin:0;
+}
+
+/* NAV */
+nav{
+display:flex;
+justify-content:space-between;
+padding:15px 40px;
+background:#0b132b;
+color:white;
+}
+
+/* CONTAINER */
+.container{
+max-width:1200px;
+margin:auto;
+padding:30px;
+}
+
+/* TOP BAR */
+.top-bar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:20px;
+flex-wrap:wrap;
+gap:10px;
+}
+
+/* TITLE */
+h2{
+color:#5a63d8;
+}
+
+/* DOCTOR CARD */
+.doctor-card{
+display:flex;
+justify-content:space-between;
+background:white;
+padding:20px;
+border-radius:12px;
+box-shadow:0 4px 15px rgba(0,0,0,0.1);
+margin-bottom:20px;
+transition:0.3s;
+}
+
+.doctor-card:hover{
+transform:translateY(-5px);
+}
+
+/* LEFT */
+.left{
+display:flex;
+gap:20px;
+}
+
+.left img{
+width:90px;
+height:90px;
+border-radius:50%;
+object-fit:cover;
+}
+
+/* INFO */
+.info h3{
+margin:0;
+color:#5a63d8;
+}
+
+.info p{
+margin:4px 0;
+font-size:14px;
+color:#555;
+}
+
+/* RIGHT */
+.right{
+display:flex;
+flex-direction:column;
+gap:10px;
+justify-content:center;
+}
+
+/* BUTTON */
+.btn{
+padding:10px 20px;
+border-radius:25px;
+border:2px solid #5a63d8;
+background:white;
+color:#5a63d8;
+cursor:pointer;
+transition:0.3s;
+}
+
+.btn:hover{
+background:#eef1ff;
+}
+
+.btn.primary{
+background:#5a63d8;
+color:white;
+border:none;
+}
+
+.btn.primary:hover{
+background:#434bc4;
+}
+
+/* MOBILE */
+@media(max-width:768px){
+.doctor-card{
+flex-direction:column;
+}
+.right{
+width:100%;
+}
+.btn{
+width:100%;
+}
+}
+</style>
+
+</head>
+
+<body>
+
+<nav>
+<div>CityCare</div>
+</nav>
+
+<div class="container">
+
+<div class="top-bar">
+<h2 id="title">All Doctors</h2>
+
+<select id="filterLocation" onchange="filterDoctors()">
+<option value="">ALL</option>
+<option value="Secunderabad">Secunderabad</option>
+<option value="Malakpet">Malakpet</option>
+</select>
+</div>
+
+<div id="doctorList"></div>
+
+</div>
+
+<script>
+
+/* DOCTORS DATA */
+const doctors = [
+
+{ name:"Dr. Sashi K Srivastav", role:"Cardiologist", exp:"12 Yrs", location:"Secunderabad", languages:"English, Hindi, Telugu", img:"https://randomuser.me/api/portraits/men/11.jpg" },
+
+{ name:"Dr. Shabaninath Samudrala", role:"Cardiologist", exp:"12 Yrs", location:"Malakpet", languages:"Telugu, English", img:"https://randomuser.me/api/portraits/men/12.jpg" },
+
+{ name:"Dr. Priya Sharma", role:"Neurologist", exp:"8 Yrs", location:"Secunderabad", languages:"English, Telugu", img:"https://randomuser.me/api/portraits/women/44.jpg" },
+
+{ name:"Dr. Kavya Rao", role:"Neurologist", exp:"7 Yrs", location:"Malakpet", languages:"Telugu, English", img:"https://randomuser.me/api/portraits/women/45.jpg" },
+
+{ name:"Dr. Arjun Singh", role:"Dentist", exp:"6 Yrs", location:"Malakpet", languages:"English, Hindi", img:"https://randomuser.me/api/portraits/men/45.jpg" },
+
+{ name:"Dr. Kiran Reddy", role:"Orthopedic", exp:"12 Yrs", location:"Secunderabad", languages:"English, Telugu", img:"https://randomuser.me/api/portraits/men/22.jpg" },
+
+{ name:"Dr. Meena Patel", role:"Pediatrician", exp:"9 Yrs", location:"Secunderabad", languages:"English, Telugu", img:"https://randomuser.me/api/portraits/women/65.jpg" },
+
+{ name:"Dr. Rahul Mehta", role:"Dermatologist", exp:"8 Yrs", location:"Secunderabad", languages:"English, Hindi", img:"https://randomuser.me/api/portraits/men/31.jpg" },
+
+{ name:"Dr. Vinay Sharma", role:"Urologist", exp:"11 Yrs", location:"Secunderabad", languages:"English, Hindi", img:"https://randomuser.me/api/portraits/men/51.jpg" },
+
+{ name:"Dr. Lakshmi Devi", role:"Gynecologist", exp:"10 Yrs", location:"Malakpet", languages:"Telugu, English", img:"https://randomuser.me/api/portraits/women/75.jpg" }
+
+];
+
+/* LOAD */
+function loadDoctors(list){
+let box=document.getElementById("doctorList");
+box.innerHTML="";
+
+if(list.length===0){
+box.innerHTML="<h3>No doctors found</h3>";
+return;
+}
+
+list.forEach(doc=>{
+
+box.innerHTML+=`
+<div class="doctor-card">
+
+<div class="left">
+<img src="${doc.img}">
+<div class="info">
+<h3>${doc.name}</h3>
+<p>${doc.role}</p>
+<p><i class="fa fa-language"></i> ${doc.languages}</p>
+<p><i class="fa fa-briefcase"></i> ${doc.exp}</p>
+<p><i class="fa fa-location-dot"></i> ${doc.location}</p>
+</div>
+</div>
+
+<div class="right">
+<button class="btn" onclick='viewProfile(${JSON.stringify(doc)})'>
+View Profile
+</button>
+
+<button class="btn primary" onclick='selectDoctor(${JSON.stringify(doc)})'>
+Book Appointment
+</button>
+</div>
+
+</div>
+`;
+});
+}
+
+/* FILTER */
+function filterDoctors(){
+
+let loc=document.getElementById("filterLocation").value;
+let role=localStorage.getItem("selectedRole");
+
+let filtered=doctors;
+
+if(role){
+filtered=filtered.filter(d=>d.role===role);
+}
+
+if(loc!==""){
+filtered=filtered.filter(d=>d.location===loc);
+}
+
+loadDoctors(filtered);
+}
+
+/* VIEW PROFILE */
+function viewProfile(doc){
+localStorage.setItem("doctor", JSON.stringify(doc));
+window.location.href="doctor.html";
+}
+
+/* BOOK */
+function selectDoctor(doc){
+localStorage.setItem("doctorName", doc.name);
+localStorage.setItem("doctor", JSON.stringify(doc));
+window.location.href="appointment.html";
+}
+
+/* INIT */
+window.onload=function(){
+
+let role=localStorage.getItem("selectedRole");
+
+if(role){
+document.getElementById("title").innerText = role + " Doctors";
+let filtered=doctors.filter(d=>d.role===role);
+loadDoctors(filtered);
+}else{
+loadDoctors(doctors);
+}
+
+};
+
+</script>
+
+</body>
+</html>

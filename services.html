@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Services - CityCare</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="icon" href="images/logo.png">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',sans-serif;}
+body{background:#f5f7fa;}
+
+/* NAV */
+nav{
+display:flex;justify-content:space-between;align-items:center;
+padding:15px 40px;background:#0b132b;color:white;
+flex-wrap:wrap;
+}
+nav a{color:white;margin-left:20px;text-decoration:none;}
+
+/* HERO */
+.hero{
+height:40vh;
+display:flex;align-items:center;justify-content:center;
+color:white;text-align:center;
+background:linear-gradient(rgba(0,0,0,0.6),rgba(0,123,255,0.5)),
+url('https://images.unsplash.com/photo-1588776814546-1ffcf47267a5');
+background-size:cover;
+}
+
+/* CONTAINER */
+.container{
+max-width:1200px;margin:auto;padding:60px 20px;text-align:center;
+}
+
+/* SEARCH */
+#search{
+padding:12px 20px;width:300px;border-radius:25px;
+border:1px solid #ccc;margin-bottom:30px;
+max-width:90%;
+}
+
+/* GRID */
+.services-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+gap:25px;
+}
+
+/* CARD */
+.service-card{
+background:white;
+border-radius:15px;
+padding:25px;
+box-shadow:0 4px 15px rgba(0,0,0,0.1);
+transition:0.3s;
+cursor:pointer;
+}
+
+.service-card:hover{
+transform:translateY(-10px);
+box-shadow:0 10px 25px rgba(0,0,0,0.2);
+}
+
+.service-card i{
+font-size:40px;
+color:#5a63d8;
+margin-bottom:10px;
+}
+
+.service-card h3{margin:10px 0;}
+.service-card p{color:#555;}
+
+/* BUTTON */
+.btn{
+margin-top:10px;
+padding:10px 15px;
+background:#5a63d8;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+/* CTA */
+.cta{
+background:#5a63d8;color:white;text-align:center;padding:50px;
+}
+
+/* FOOTER */
+footer{
+background:#0b132b;color:white;padding:40px;
+}
+.footer-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:30px;
+}
+footer h4{color:#00c6ff;}
+footer p{color:#ddd;font-size:14px;margin:5px 0;}
+
+/* EMPTY */
+.empty{
+color:#777;
+margin-top:20px;
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAV -->
+<nav>
+<h2>CityCare</h2>
+<div>
+<a href="index.html">Home</a>
+<a href="services.html">Services</a>
+<a href="doctors.html">Doctors</a>
+<a href="contact.html">Contact</a>
+</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+<h1>Our Medical Services</h1>
+</section>
+
+<!-- SERVICES -->
+<div class="container">
+<h2>Our Specialties</h2>
+
+<input type="text" id="search" placeholder="Search services..." onkeyup="filterServices()">
+
+<div class="services-grid" id="servicesGrid"></div>
+<p id="empty" class="empty"></p>
+
+</div>
+
+<!-- CTA -->
+<div class="cta">
+<h2>Need Consultation?</h2>
+<button onclick="goToAppointment()" class="btn">Book Appointment</button>
+</div>
+
+<!-- FOOTER -->
+<footer>
+<div class="footer-grid">
+
+<div>
+<h4>CityCare</h4>
+<p>Advanced healthcare with expert doctors.</p>
+</div>
+
+<div>
+<h4>Services</h4>
+<p>Cardiology</p>
+<p>Neurology</p>
+<p>Orthopedic</p>
+</div>
+
+<div>
+<h4>Contact</h4>
+<p>📞 9876543210</p>
+<p>📧 citycare@gmail.com</p>
+</div>
+
+</div>
+</footer>
+
+<script>
+
+/* SERVICES DATA */
+const services = [
+
+{name:"Cardiology", desc:"Heart care treatments", icon:"fa-heart-pulse"},
+{name:"Neurology", desc:"Brain specialists", icon:"fa-brain"},
+{name:"Oncology", desc:"Cancer treatment", icon:"fa-ribbon"},
+{name:"Gastro", desc:"Digestive care", icon:"fa-notes-medical"},
+{name:"Nephrology", desc:"Kidney care", icon:"fa-procedures"},
+{name:"Orthopedic", desc:"Bone & joints", icon:"fa-bone"},
+{name:"Critical Care", desc:"Emergency services", icon:"fa-bed"},
+{name:"Mother & Child", desc:"Child & maternity care", icon:"fa-baby"}
+
+];
+
+/* LOAD */
+function loadServices(list){
+let grid=document.getElementById("servicesGrid");
+let empty=document.getElementById("empty");
+
+grid.innerHTML="";
+
+if(list.length===0){
+empty.innerText="No services found";
+return;
+}else{
+empty.innerText="";
+}
+
+list.forEach(s=>{
+grid.innerHTML+=`
+<div class="service-card" onclick="openSpecialization('${s.name}')">
+<i class="fas ${s.icon}"></i>
+<h3>${s.name}</h3>
+<p>${s.desc}</p>
+<button class="btn">View Details</button>
+</div>
+`;
+});
+}
+
+/* SEARCH */
+function filterServices(){
+let val=document.getElementById("search").value.toLowerCase();
+let filtered=services.filter(s=>s.name.toLowerCase().includes(val));
+loadServices(filtered);
+}
+
+/* OPEN → DOCTORS PAGE */
+function openSpecialization(name){
+localStorage.setItem("selectedRole", name);
+window.location.href="doctors.html";
+}
+
+/* INIT */
+loadServices(services);
+
+/* CTA */
+function goToAppointment(){
+window.location.href="appointment.html";
+}
+
+</script>
+
+</body>
+</html>

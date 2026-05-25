@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Profile - CityCare</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body{font-family:'Segoe UI';background:#f4f6fb;margin:0;}
+.container{
+max-width:700px;margin:30px auto;background:white;
+padding:25px;border-radius:12px;
+box-shadow:0 4px 15px rgba(0,0,0,0.1);
+text-align:center;
+}
+
+.avatar{
+width:100px;height:100px;border-radius:50%;
+object-fit:cover;margin-bottom:10px;
+}
+
+input{padding:10px;margin:5px;width:80%;}
+button{padding:8px 15px;margin:5px;border:none;border-radius:5px;cursor:pointer;}
+.save{background:#28a745;color:white;}
+.logout{background:#dc3545;color:white;}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<img id="avatar" class="avatar" src="https://via.placeholder.com/100">
+
+<h2>My Profile</h2>
+
+<div id="info"></div>
+
+<input type="file" id="file">
+<button onclick="uploadPhoto()">Upload Photo</button>
+
+<h3>Edit</h3>
+<input id="name" placeholder="Name">
+<input id="phone" placeholder="Phone">
+<button class="save" onclick="saveProfile()">Save</button>
+
+<h3>Change Password</h3>
+<input id="newPass" type="password" placeholder="New Password">
+<button onclick="changePassword()">Update Password</button>
+
+<h3>Notifications</h3>
+<label>
+<input type="checkbox" id="notify"> Enable Notifications
+</label>
+
+<h3>Appointment History</h3>
+<canvas id="chart"></canvas>
+
+<h3>Medical Reports</h3>
+<input type="file" id="report">
+<button onclick="uploadReport()">Upload Report</button>
+<div id="reports"></div>
+
+<button class="logout" onclick="logout()">Logout</button>
+
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT",
+  storageBucket: "YOUR_PROJECT.appspot.com"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+const storage = firebase.storage();
+
+let uid;
+
+/* LOAD USER */
+auth.onAuthStateChanged(async user=>{
+if(!user){location.href="login.html";return;}
+
+uid=user.uid;
+
+/* USER DATA */
+let doc = await db.collection("users").doc(uid).get();
+let data = doc.data() || {};
+
+document.getElementById("info").innerHTML = `
+<p>${user.email}</p>
+<p>${data.name || ""}</p>
+`;
+
+document.getElementById("name").value = data.name || "";
+document.getElementById("phone").value = data.phone || "";
+document.getElementById("notify").checked = data.notify || false;
+
+/* LOAD PHOTO */
+if(data.photo){
+document.getElementById("avatar").src = data.photo;
+}
+
+/* LOAD REPORTS */
+loadReports();
+
+/* CHART */
+let snap = await db.collection("appointments")
+.where("email","==",user.email).get();
+
+let map={};
+snap.forEach(doc=>{
+let d=doc.data();
+if(!d.createdAt) return;
+let date=new Date(d.createdAt.seconds*1000).toLocaleDateString();
+map[date]=(map[date]||0)+1;
+});
+
+new Chart(document.getElementById("chart"),{
+type:'line',
+data:{labels:Object.keys(map),datasets:[{data:Object.values(map)}]}
+});
+
+});
+
+/* SAVE PROFILE */
+function saveProfile(){
+db.collection("users").doc(uid).set({
+name:name.value,
+phone:phone.value,
+notify:notify.checked
+},{merge:true}).then(()=>alert("Saved"));
+}
+
+/* CHANGE PASSWORD */
+function changePassword(){
+let user=auth.currentUser;
+user.updatePassword(newPass.value)
+.then(()=>alert("Password updated"))
+.catch(e=>alert(e.message));
+}
+
+/* UPLOAD PHOTO */
+function uploadPhoto(){
+let file=document.getElementById("file").files[0];
+let ref=storage.ref(`users/${uid}/profile.jpg`);
+
+ref.put(file).then(async ()=>{
+let url=await ref.getDownloadURL();
+
+db.collection("users").doc(uid).set({photo:url},{merge:true});
+document.getElementById("avatar").src=url;
+});
+}
+
+/* REPORT UPLOAD */
+function uploadReport(){
+let file=document.getElementById("report").files[0];
+let ref=storage.ref(`users/${uid}/${file.name}`);
+
+ref.put(file).then(async ()=>{
+let url=await ref.getDownloadURL();
+
+db.collection("reports").add({
+uid:uid,
+name:file.name,
+url:url
+});
+
+loadReports();
+});
+}
+
+/* LOAD REPORTS */
+function loadReports(){
+db.collection("reports").where("uid","==",uid)
+.onSnapshot(snap=>{
+let div=document.getElementById("reports");
+div.innerHTML="";
+
+snap.forEach(doc=>{
+let d=doc.data();
+
+div.innerHTML+=`
+<p>
+${d.name} 
+<a href="${d.url}" target="_blank">Download</a>
+</p>
+`;
+});
+});
+}
+
+/* LOGOUT */
+function logout(){
+auth.signOut();
+location.href="login.html";
+}
+</script>
+
+</body>
+</html>

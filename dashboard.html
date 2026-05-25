@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>My Appointments</title>
+
+<style>
+body{
+font-family:'Segoe UI';
+background:#f4f6fb;
+margin:0;
+}
+
+.container{
+max-width:900px;
+margin:auto;
+padding:30px;
+}
+
+h2{text-align:center;margin-bottom:20px;}
+
+/* CARD */
+.card{
+background:white;
+padding:20px;
+margin-bottom:15px;
+border-radius:15px;
+box-shadow:0 6px 20px rgba(0,0,0,0.08);
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
+transition:0.3s;
+}
+.card:hover{transform:translateY(-6px);}
+
+/* STATUS */
+.status{
+padding:6px 14px;
+border-radius:20px;
+font-size:13px;
+font-weight:bold;
+display:inline-block;
+}
+.pending{background:#fff3cd;color:#856404;}
+.approved{background:#d4edda;color:#155724;}
+.cancelled{background:#f8d7da;color:#721c24;}
+.completed{background:#e2e3e5;color:#383d41;}
+
+/* BUTTONS */
+.btn{
+padding:7px 14px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+margin:3px;
+}
+
+.cancel{background:#dc3545;color:white;}
+.reschedule{background:#007bff;color:white;}
+.whatsapp{background:#25D366;color:white;}
+
+/* MODAL */
+.modal{
+display:none;
+position:fixed;
+top:0;left:0;width:100%;height:100%;
+background:rgba(0,0,0,0.5);
+justify-content:center;
+align-items:center;
+}
+
+.modal-box{
+background:white;
+padding:25px;
+border-radius:10px;
+text-align:center;
+}
+
+.modal-box input{
+padding:10px;
+margin:10px;
+width:200px;
+}
+
+/* EMPTY */
+.empty{text-align:center;color:#777;margin-top:30px;}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+<h2>My Appointments</h2>
+<div id="list"></div>
+<p id="empty" class="empty"></p>
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+<div class="modal-box">
+<h3>Reschedule</h3>
+<input type="date" id="newDate"><br>
+<input type="time" id="newTime"><br>
+<button onclick="saveReschedule()">Save</button>
+<button onclick="closeModal()">Cancel</button>
+</div>
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script>
+
+/* ✅ FIXED CONFIG ONLY */
+const firebaseConfig = {
+  apiKey: "AIzaSyBgpOLahDrFHB32QJu_Z7OwGhI90jB9jGE",
+  authDomain: "citycare-vishnu-2026.firebaseapp.com",
+  projectId: "citycare-vishnu-2026",
+  storageBucket: "citycare-vishnu-2026.firebasestorage.app",
+  messagingSenderId: "123554182061",
+  appId: "1:123554182061:web:b06db741f262adac67a724"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.firestore();
+const auth = firebase.auth();
+
+let currentId=null;
+
+/* LOAD */
+auth.onAuthStateChanged(user=>{
+if(!user){
+window.location.href="login.html";
+return;
+}
+
+db.collection("appointments")
+.where("email","==",user.email)
+.orderBy("createdAt","desc")
+.onSnapshot(snapshot=>{
+
+let box=document.getElementById("list");
+box.innerHTML="";
+
+if(snapshot.empty){
+document.getElementById("empty").innerText="No appointments";
+return;
+}else{
+document.getElementById("empty").innerText="";
+}
+
+snapshot.forEach(doc=>{
+let a=doc.data();
+
+let date=a.date?new Date(a.date).toLocaleDateString():"-";
+let time=a.time||a.slot||"-";
+let status=(a.status||"Pending").toLowerCase();
+
+box.innerHTML+=`
+<div class="card">
+
+<div>
+<h3>${a.doctor}</h3>
+<p>${date} | ${time}</p>
+</div>
+
+<div>
+<p class="status ${status}">${a.status||"Pending"}</p><br>
+
+${status==="pending"||status==="approved" ? `
+<button class="btn cancel" onclick="cancel('${doc.id}')">Cancel</button>
+<button class="btn reschedule" onclick="openModal('${doc.id}')">Reschedule</button>
+<button class="btn whatsapp" onclick="sendWhatsApp('${a.doctor}','${date}','${time}')">WhatsApp</button>
+` : ""}
+
+</div>
+
+</div>
+`;
+
+});
+
+});
+
+});
+
+/* CANCEL */
+function cancel(id){
+if(confirm("Cancel appointment?")){
+db.collection("appointments").doc(id).update({status:"Cancelled"});
+}
+}
+
+/* RESCHEDULE */
+function openModal(id){
+currentId=id;
+document.getElementById("modal").style.display="flex";
+}
+
+function closeModal(){
+document.getElementById("modal").style.display="none";
+}
+
+function saveReschedule(){
+let d=document.getElementById("newDate").value;
+let t=document.getElementById("newTime").value;
+
+db.collection("appointments").doc(currentId).update({
+date:d,
+time:t,
+status:"Pending"
+});
+
+closeModal();
+}
+
+/* WHATSAPP */
+function sendWhatsApp(doc, date, time){
+let msg=`Appointment confirmed with ${doc} on ${date} at ${time}`;
+window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`);
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Specialization - CityCare</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="icon" href="images/logo.png">
+
+<style>
+body{
+font-family:'Segoe UI',sans-serif;
+background:#f4f6fb;
+margin:0;
+}
+
+/* NAV */
+nav{
+background:#0b132b;
+color:white;
+padding:15px;
+text-align:center;
+font-size:22px;
+font-weight:600;
+}
+
+/* HERO */
+.hero{
+height:220px;
+background-size:cover;
+background-position:center;
+display:flex;
+align-items:center;
+justify-content:center;
+color:white;
+font-size:32px;
+font-weight:600;
+position:relative;
+}
+
+.hero::before{
+content:"";
+position:absolute;
+top:0;left:0;right:0;bottom:0;
+background:rgba(0,0,0,0.5);
+}
+
+.hero span{
+position:relative;
+z-index:2;
+}
+
+/* CONTAINER */
+.container{
+max-width:1000px;
+margin:auto;
+padding:30px;
+}
+
+/* CARD */
+.card{
+background:white;
+padding:20px;
+margin:20px 0;
+border-radius:12px;
+box-shadow:0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* LIST */
+ul{list-style:none;padding:0;}
+li{
+margin:10px 0;
+display:flex;
+align-items:center;
+gap:10px;
+}
+
+/* DOCTOR */
+.doctor{
+display:flex;
+align-items:center;
+gap:15px;
+margin:15px 0;
+padding:10px;
+border-radius:10px;
+background:#f9f9ff;
+}
+
+.doctor img{
+width:60px;
+height:60px;
+border-radius:50%;
+object-fit:cover;
+}
+
+/* BUTTON */
+button{
+margin-top:5px;
+padding:6px 12px;
+border:none;
+background:#5a63d8;
+color:white;
+border-radius:20px;
+cursor:pointer;
+}
+
+.error{
+text-align:center;
+color:red;
+margin-top:50px;
+font-size:20px;
+}
+</style>
+</head>
+
+<body>
+
+<nav id="title">Specialization</nav>
+
+<div class="hero" id="hero">
+<span id="heroText"></span>
+</div>
+
+<div class="container">
+
+<div class="card">
+<h2>About</h2>
+<p id="about"></p>
+</div>
+
+<div class="card">
+<h2>Facilities</h2>
+<ul id="facilities"></ul>
+</div>
+
+<div class="card">
+<h2>Achievements</h2>
+<ul id="achievements"></ul>
+</div>
+
+<div class="card">
+<h2>Top Doctors</h2>
+<div id="doctors"></div>
+</div>
+
+</div>
+
+<script>
+
+/* DATA */
+const data = {
+
+Cardiology:{
+img:"images/cardio.jpg",
+about:"Advanced heart care with expert cardiologists.",
+facilities:[
+{icon:"fa-heart-pulse",text:"ECG Monitoring"},
+{icon:"fa-stethoscope",text:"Heart Checkups"},
+{icon:"fa-hospital",text:"Cardiac ICU"}
+],
+achievements:[
+{icon:"fa-award",text:"1000+ Surgeries"},
+{icon:"fa-trophy",text:"Top Heart Center"}
+],
+doctors:[
+{name:"Dr. Sashi",img:"https://randomuser.me/api/portraits/men/11.jpg"},
+{name:"Dr. Krishna",img:"https://randomuser.me/api/portraits/men/13.jpg"}
+]
+},
+
+Neurology:{
+img:"images/neuro.jpg",
+about:"Brain and nervous system treatments.",
+facilities:[
+{icon:"fa-brain",text:"MRI Scan"},
+{icon:"fa-procedures",text:"Stroke Care"}
+],
+achievements:[
+{icon:"fa-award",text:"Best Neuro Team"}
+],
+doctors:[
+{name:"Dr. Priya",img:"https://randomuser.me/api/portraits/women/44.jpg"}
+]
+},
+
+Oncology:{
+img:"images/oncology.jpg",
+about:"Cancer diagnosis and treatment.",
+facilities:[
+{icon:"fa-ribbon",text:"Chemotherapy"},
+{icon:"fa-hospital",text:"Radiation Therapy"}
+],
+achievements:[
+{icon:"fa-award",text:"Top Oncology Center"}
+],
+doctors:[
+{name:"Dr. Arjun",img:"https://randomuser.me/api/portraits/men/45.jpg"}
+]
+},
+
+Gastro:{
+img:"images/gastro.jpg",
+about:"Digestive system treatments.",
+facilities:[
+{icon:"fa-notes-medical",text:"Endoscopy"},
+{icon:"fa-stethoscope",text:"Liver Care"}
+],
+achievements:[
+{icon:"fa-trophy",text:"Top Gastro Dept"}
+],
+doctors:[
+{name:"Dr. Ravi",img:"https://randomuser.me/api/portraits/men/60.jpg"}
+]
+},
+
+Nephrology:{
+img:"images/nephro.jpg",
+about:"Kidney care and dialysis.",
+facilities:[
+{icon:"fa-procedures",text:"Dialysis"},
+{icon:"fa-hospital",text:"Kidney ICU"}
+],
+achievements:[
+{icon:"fa-award",text:"Top Nephrology Unit"}
+],
+doctors:[
+{name:"Dr. Kumar",img:"https://randomuser.me/api/portraits/men/22.jpg"}
+]
+},
+
+Orthopedic:{
+img:"images/ortho.jpg",
+about:"Bone and joint treatments.",
+facilities:[
+{icon:"fa-bone",text:"Joint Replacement"},
+{icon:"fa-wheelchair",text:"Rehabilitation"}
+],
+achievements:[
+{icon:"fa-trophy",text:"500+ Surgeries"}
+],
+doctors:[
+{name:"Dr. Kiran",img:"https://randomuser.me/api/portraits/men/22.jpg"}
+]
+},
+
+"Critical Care":{
+img:"images/icu.jpg",
+about:"Emergency and ICU services.",
+facilities:[
+{icon:"fa-bed",text:"24/7 ICU"},
+{icon:"fa-heart-pulse",text:"Life Support"}
+],
+achievements:[
+{icon:"fa-trophy",text:"Emergency Excellence"}
+],
+doctors:[
+{name:"Dr. Meena",img:"https://randomuser.me/api/portraits/women/65.jpg"}
+]
+},
+
+"Mother & Child":{
+img:"images/mother.jpg",
+about:"Care for mothers and children.",
+facilities:[
+{icon:"fa-baby",text:"Pediatric Care"},
+{icon:"fa-heart",text:"Maternity Services"}
+],
+achievements:[
+{icon:"fa-award",text:"Best Child Care Unit"}
+],
+doctors:[
+{name:"Dr. Lakshmi",img:"https://randomuser.me/api/portraits/women/75.jpg"}
+]
+}
+
+};
+
+/* LOAD */
+let spec = localStorage.getItem("specialization");
+
+if(!spec || !data[spec]){
+document.body.innerHTML="<div class='error'>No specialization data found</div>";
+throw new Error("Invalid specialization");
+}
+
+const d = data[spec];
+
+/* TITLE */
+document.getElementById("title").innerText = spec;
+document.getElementById("heroText").innerText = spec;
+
+/* HERO */
+document.getElementById("hero").style.backgroundImage = `url(${d.img})`;
+
+/* ABOUT */
+document.getElementById("about").innerText = d.about;
+
+/* FACILITIES */
+let fHTML="";
+d.facilities.forEach(f=>{
+fHTML+=`<li><i class="fas ${f.icon}"></i> ${f.text}</li>`;
+});
+document.getElementById("facilities").innerHTML=fHTML;
+
+/* ACHIEVEMENTS */
+let aHTML="";
+d.achievements.forEach(a=>{
+aHTML+=`<li><i class="fas ${a.icon}"></i> ${a.text}</li>`;
+});
+document.getElementById("achievements").innerHTML=aHTML;
+
+/* DOCTORS */
+let docHTML="";
+d.doctors.forEach(doc=>{
+docHTML+=`
+<div class="doctor">
+<img src="${doc.img}">
+<div>
+<p>${doc.name}</p>
+<button onclick="goDoctor('${spec}')">View</button>
+</div>
+</div>`;
+});
+document.getElementById("doctors").innerHTML=docHTML;
+
+/* NAV */
+function goDoctor(role){
+
+const map={
+Cardiology:"Cardiologist",
+Neurology:"Neurologist",
+Oncology:"Oncologist",
+Gastro:"Gastroenterologist",
+Nephrology:"Nephrologist",
+Orthopedic:"Orthopedic",
+"Critical Care":"Critical Care",
+"Mother & Child":"Pediatrician"
+};
+
+localStorage.setItem("selectedRole", map[role]);
+window.location.href="doctors.html";
+}
+
+</script>
+
+</body>
+</html>

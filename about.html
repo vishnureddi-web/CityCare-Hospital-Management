@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About - CityCare</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="icon" href="images/logo.png">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI';}
+body{background:#f4f6fb;}
+
+/* NAV */
+nav{
+display:flex;justify-content:space-between;align-items:center;
+padding:18px 50px;background:#0b132b;color:white;
+flex-wrap:wrap;
+}
+nav a{color:white;margin-left:25px;text-decoration:none;}
+nav a:hover{color:#00c6ff;}
+
+/* HERO */
+.hero{
+height:45vh;
+display:flex;flex-direction:column;justify-content:center;align-items:center;
+text-align:center;color:white;
+background:linear-gradient(135deg,rgba(11,19,43,0.9),rgba(0,123,255,0.5)),
+url('https://images.unsplash.com/photo-1588776814546-1ffcf47267a5');
+background-size:cover;
+border-radius:0 0 40px 40px;
+}
+
+/* CONTAINER */
+.container{
+max-width:1100px;margin:auto;padding:60px 20px;text-align:center;
+}
+
+/* TEXT */
+.about-text{
+margin-top:15px;
+line-height:1.8;
+color:#555;
+}
+
+/* STATS */
+.stats{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:20px;
+margin-top:30px;
+}
+.stat{
+background:#5a63d8;
+color:white;
+padding:25px;
+border-radius:12px;
+}
+.stat h2{font-size:30px;}
+
+/* GRID */
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:20px;
+margin-top:20px;
+}
+
+/* FEATURES */
+.feature{
+background:white;
+padding:20px;
+border-radius:12px;
+box-shadow:0 4px 15px rgba(0,0,0,0.05);
+}
+.feature i{
+font-size:28px;
+color:#5a63d8;
+margin-bottom:10px;
+}
+
+/* MISSION / VISION */
+.mv-wrapper{
+display:flex;
+justify-content:center;
+gap:30px;
+flex-wrap:wrap;
+margin-top:30px;
+}
+
+.mv-card{
+background:linear-gradient(135deg,#ffffff,#f0f4ff);
+padding:30px;
+border-radius:20px;
+width:350px;
+text-align:center;
+box-shadow:0 10px 30px rgba(0,0,0,0.08);
+transition:0.4s;
+}
+
+.mv-card:hover{
+transform:translateY(-12px) scale(1.02);
+box-shadow:0 20px 50px rgba(90,99,216,0.25);
+}
+
+.mv-icon{
+width:70px;height:70px;margin:auto;border-radius:50%;
+background:linear-gradient(135deg,#5a63d8,#00c6ff);
+display:flex;align-items:center;justify-content:center;
+color:white;font-size:26px;margin-bottom:15px;
+}
+
+/* INSURANCE */
+.insurance-card{
+background:white;
+padding:20px;
+border-radius:12px;
+box-shadow:0 4px 10px rgba(0,0,0,0.05);
+transition:0.3s;
+}
+.insurance-card:hover{
+background:#5a63d8;color:white;
+}
+
+/* TIMELINE */
+.timeline{
+position:relative;
+max-width:800px;
+margin:auto;
+}
+.timeline::after{
+content:'';position:absolute;width:4px;background:#5a63d8;
+top:0;bottom:0;left:50%;margin-left:-2px;
+}
+.timeline-item{
+padding:20px 30px;position:relative;width:50%;
+}
+.timeline-item.left{left:0;}
+.timeline-item.right{left:50%;}
+.timeline-item::before{
+content:'';position:absolute;top:20px;width:20px;height:20px;
+background:#5a63d8;border-radius:50%;
+}
+.timeline-item.left::before{right:-10px;}
+.timeline-item.right::before{left:-10px;}
+
+.timeline-content{
+background:white;padding:20px;border-radius:10px;
+box-shadow:0 4px 15px rgba(0,0,0,0.05);
+}
+
+/* CTA */
+.cta{
+background:#5a63d8;color:white;text-align:center;padding:60px 20px;
+}
+.cta button{
+margin-top:15px;padding:12px 30px;border:none;
+background:white;color:#5a63d8;border-radius:25px;cursor:pointer;
+}
+
+/* FOOTER */
+footer{
+background:#0b132b;color:#ccc;padding:50px 20px;
+}
+.footer-grid{
+display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+gap:30px;
+}
+footer h4{color:#00c6ff;}
+footer p{margin:5px 0;}
+footer i{margin-right:8px;color:#00c6ff;}
+</style>
+</head>
+
+<body>
+
+<nav>
+<h2>CityCare</h2>
+<div>
+<a href="index.html">Home</a>
+<a href="services.html">Services</a>
+<a href="contact.html">Contact</a>
+</div>
+</nav>
+
+<section class="hero">
+<h1>About CityCare</h1>
+<p>Advanced Healthcare with Trust & Care</p>
+</section>
+
+<div class="container">
+<h2>Who We Are</h2>
+<p class="about-text">
+CityCare Hospital provides world-class medical services with expert doctors, modern technology, and patient-centered care.
+</p>
+
+<div class="stats">
+<div class="stat"><h2 id="c1">0</h2><p>Years Experience</p></div>
+<div class="stat"><h2 id="c2">0</h2><p>Doctors</p></div>
+<div class="stat"><h2 id="c3">0</h2><p>Patients</p></div>
+</div>
+</div>
+
+<div class="container">
+<h2>Mission & Vision</h2>
+
+<div class="mv-wrapper">
+<div class="mv-card">
+<div class="mv-icon"><i class="fas fa-bullseye"></i></div>
+<h3>Mission</h3>
+<p>To deliver affordable, high-quality healthcare using advanced technology while ensuring patient satisfaction.</p>
+</div>
+
+<div class="mv-card">
+<div class="mv-icon"><i class="fas fa-eye"></i></div>
+<h3>Vision</h3>
+<p>To become India's most trusted healthcare provider with innovation and compassion.</p>
+</div>
+</div>
+</div>
+
+<div class="container">
+<h2>Why Choose Us</h2>
+<div class="grid">
+<div class="feature"><i class="fas fa-user-md"></i><p>Expert Doctors</p></div>
+<div class="feature"><i class="fas fa-clock"></i><p>24/7 Service</p></div>
+<div class="feature"><i class="fas fa-hospital"></i><p>Modern Equipment</p></div>
+<div class="feature"><i class="fas fa-heart"></i><p>Patient Care</p></div>
+</div>
+</div>
+
+<div class="container">
+<h2>Insurance Coverage</h2>
+<div class="grid">
+<div class="insurance-card">Star Health</div>
+<div class="insurance-card">ICICI Lombard</div>
+<div class="insurance-card">HDFC ERGO</div>
+<div class="insurance-card">Apollo Munich</div>
+</div>
+</div>
+
+<div class="container">
+<h2>Our Journey</h2>
+
+<div class="timeline">
+<div class="timeline-item left"><div class="timeline-content">2010 - Hospital Founded</div></div>
+<div class="timeline-item right"><div class="timeline-content">2015 - Expanded Services</div></div>
+<div class="timeline-item left"><div class="timeline-content">2020 - Advanced Technology</div></div>
+<div class="timeline-item right"><div class="timeline-content">2025 - 10K+ Patients</div></div>
+</div>
+</div>
+
+<div class="cta">
+<h2>Need Medical Help?</h2>
+<button onclick="location.href='appointment.html'">Book Appointment</button>
+</div>
+
+<footer>
+<div class="footer-grid">
+<div><h4>CityCare</h4><p>Advanced healthcare services</p></div>
+<div><h4>Quick Links</h4><p>Home</p><p>Services</p><p>Contact</p></div>
+<div><h4>Contact</h4><p>+91 9876543210</p><p>citycare@gmail.com</p></div>
+</div>
+</footer>
+
+<script>
+function animate(id,target){
+let count=0;
+let step=Math.ceil(target/100);
+
+let interval=setInterval(()=>{
+count+=step;
+if(count>=target){
+count=target;
+clearInterval(interval);
+}
+document.getElementById(id).innerText=count+"+";
+},20);
+}
+
+animate("c1",15);
+animate("c2",50);
+animate("c3",10000);
+</script>
+
+</body>
+</html>

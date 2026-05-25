@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Doctor Profile</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="icon" href="images/logo.png">
+<style>
+body{
+font-family:'Segoe UI',sans-serif;
+background:#f4f6fb;
+margin:0;
+}
+
+/* NAV */
+nav{
+background:#0b132b;
+color:white;
+padding:15px;
+text-align:center;
+font-size:20px;
+font-weight:600;
+}
+
+/* CONTAINER */
+.container{
+max-width:900px;
+margin:30px auto;
+background:white;
+padding:30px;
+border-radius:12px;
+box-shadow:0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* PROFILE */
+.profile{
+display:flex;
+gap:30px;
+align-items:center;
+}
+
+.profile img{
+width:150px;
+height:150px;
+border-radius:50%;
+object-fit:cover;
+}
+
+.info h2{
+margin:0;
+color:#5a63d8;
+}
+
+.info p{
+margin:6px 0;
+color:#555;
+}
+
+/* SLOT */
+.slot-box{
+margin-top:30px;
+text-align:center;
+}
+
+select{
+padding:10px;
+width:200px;
+border-radius:8px;
+border:1px solid #ccc;
+}
+
+/* BUTTON */
+button{
+margin-top:15px;
+padding:12px 25px;
+background:#5a63d8;
+color:white;
+border:none;
+border-radius:25px;
+cursor:pointer;
+font-size:15px;
+}
+
+button:hover{
+opacity:0.9;
+}
+
+/* MOBILE */
+@media(max-width:768px){
+.profile{
+flex-direction:column;
+text-align:center;
+}
+}
+</style>
+
+</head>
+
+<body>
+
+<nav>Doctor Profile</nav>
+
+<div class="container">
+
+<div id="profile"></div>
+
+<div class="slot-box">
+<h3>Select Appointment Slot</h3>
+<select id="slots"></select><br>
+
+<!-- 👉 FIXED BUTTON -->
+<button onclick="goToAppointment()">Continue Booking</button>
+
+</div>
+
+</div>
+
+<script>
+
+/* LOAD DOCTOR */
+let doctor = JSON.parse(localStorage.getItem("doctor"));
+
+if(!doctor){
+alert("No doctor selected");
+window.location.href="doctors.html";
+}
+
+/* PROFILE UI */
+document.getElementById("profile").innerHTML = `
+<div class="profile">
+<img src="${doctor.img}">
+<div class="info">
+<h2>${doctor.name}</h2>
+<p>${doctor.role}</p>
+<p>⭐ ${doctor.rating || "4.5"}</p>
+<p>Experience: ${doctor.exp || "10"} Years</p>
+<p>${doctor.about || "Experienced specialist doctor."}</p>
+</div>
+</div>
+`;
+
+/* LOAD SLOTS */
+let slots = doctor.slots || ["10AM","12PM","3PM"];
+
+slots.forEach(s=>{
+let opt=document.createElement("option");
+opt.text=s;
+document.getElementById("slots").add(opt);
+});
+
+/* 🔥 FIXED FUNCTION */
+function goToAppointment(){
+
+let selectedSlot = document.getElementById("slots").value;
+
+/* SAVE DATA */
+localStorage.setItem("doctorName", doctor.name);
+localStorage.setItem("selectedSlot", selectedSlot);
+
+/* REDIRECT */
+window.location.href = "appointment.html";
+
+}
+
+</script>
+
+</body>
+</html>

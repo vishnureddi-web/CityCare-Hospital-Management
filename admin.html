@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Dashboard</title>
+<link rel="icon" href="images/logo.png">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+<style>
+body{font-family:'Segoe UI';background:#f4f6fb;margin:0;}
+
+nav{
+background:#0b132b;color:white;
+padding:15px 30px;
+display:flex;justify-content:space-between;
+}
+
+.container{padding:20px;}
+
+.chart-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:20px;margin-bottom:20px;
+}
+
+.chart-box{
+background:white;padding:20px;
+border-radius:10px;
+box-shadow:0 4px 15px rgba(0,0,0,0.1);
+}
+
+.controls{
+display:flex;gap:10px;margin-bottom:15px;flex-wrap:wrap;
+}
+
+input,select{
+padding:8px;border-radius:5px;border:1px solid #ccc;
+}
+
+button{
+padding:6px 12px;border:none;border-radius:5px;cursor:pointer;
+}
+
+.export{background:#17a2b8;color:white;}
+
+table{
+width:100%;background:white;border-collapse:collapse;
+box-shadow:0 4px 15px rgba(0,0,0,0.1);
+margin-bottom:20px;
+}
+
+th,td{padding:10px;text-align:center;border-bottom:1px solid #eee;}
+th{background:#5a63d8;color:white;}
+
+.status{
+padding:5px 10px;border-radius:20px;font-size:12px;
+}
+.pending{background:#fff3cd;}
+.approved{background:#d1ecf1;}
+.cancelled{background:#f8d7da;}
+.completed{background:#e2e3e5;}
+</style>
+</head>
+
+<body>
+
+<nav>
+<h2>Admin Dashboard</h2>
+<button onclick="logout()">Logout</button>
+</nav>
+
+<div class="container">
+
+<!-- FILTER -->
+<div class="controls">
+<input type="text" id="search" placeholder="Search..." onkeyup="applyFilters()">
+
+<select id="statusFilter" onchange="applyFilters()">
+<option value="">All Status</option>
+<option>Pending</option>
+<option>Approved</option>
+<option>Cancelled</option>
+<option>Completed</option>
+</select>
+
+<button class="export" onclick="exportExcel()">Export Excel</button>
+</div>
+
+<!-- CHARTS -->
+<div class="chart-grid">
+<div class="chart-box"><canvas id="barChart"></canvas></div>
+<div class="chart-box"><canvas id="pieChart"></canvas></div>
+<div class="chart-box"><canvas id="revenueChart"></canvas></div>
+<div class="chart-box"><canvas id="trendChart"></canvas></div>
+</div>
+
+<!-- APPOINTMENTS TABLE -->
+<table>
+<thead>
+<tr>
+<th>Email</th>
+<th>Doctor</th>
+<th>Date</th>
+<th>Time</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody id="table"></tbody>
+</table>
+
+<!-- CALLBACK TABLE -->
+<h3>Callback Requests</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Phone</th>
+<th>Date</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="callbackTable"></tbody>
+</table>
+
+<!-- MESSAGE TABLE -->
+<h3>Messages</h3>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Email</th>
+<th>Message</th>
+<th>Date</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody id="messageTable"></tbody>
+</table>
+
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+<script>
+
+/* CONFIG */
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT"
+};
+
+firebase.initializeApp(firebaseConfig);
+
+const db = firebase.firestore();
+const auth = firebase.auth();
+
+/* AUTH CHECK (ROLE BASED) */
+auth.onAuthStateChanged(async user=>{
+if(!user){
+window.location.href="login.html";
+return;
+}
+
+let doc = await db.collection("users").doc(user.uid).get();
+
+if(!doc.exists || doc.data().role !== "admin"){
+alert("Access denied");
+window.location.href="index.html";
+return;
+}
+
+loadData();
+});
+
+/* GLOBAL DATA */
+let globalData=[];
+let barChart,pieChart,revenueChart,trendChart;
+
+/* LOAD APPOINTMENTS */
+function loadData(){
+db.collection("appointments")
+.orderBy("createdAt","desc")
+.onSnapshot(snap=>{
+
+globalData=[];
+
+snap.forEach(doc=>{
+let d = doc.data();
+d.id = doc.id;
+globalData.push(d);
+});
+
+applyFilters();
+});
+}
+
+/* FILTER */
+function applyFilters(){
+
+let search=document.getElementById("search").value.toLowerCase();
+let status=document.getElementById("statusFilter").value;
+
+let filtered=globalData.filter(d=>{
+return (
+(d.email||"").toLowerCase().includes(search) ||
+(d.doctor||"").toLowerCase().includes(search)
+) && (status? d.status===status:true);
+});
+
+renderTable(filtered);
+renderCharts(filtered);
+renderRevenue(filtered);
+renderTrend(filtered);
+
+}
+
+/* TABLE */
+function renderTable(data){
+let t=document.getElementById("table");
+t.innerHTML="";
+
+data.forEach(d=>{
+let s=(d.status||"Pending").toLowerCase();
+
+t.innerHTML+=`
+<tr>
+<td>${d.email}</td>
+<td>${d.doctor}</td>
+<td>${d.date||"-"}</td>
+<td>${d.time||d.slot||"-"}</td>
+<td><span class="status ${s}">${d.status||"Pending"}</span></td>
+</tr>
+`;
+});
+}
+
+/* CHARTS */
+function renderCharts(data){
+
+let counts={Pending:0,Approved:0,Cancelled:0,Completed:0};
+
+data.forEach(d=>{
+let s=d.status||"Pending";
+counts[s]=(counts[s]||0)+1;
+});
+
+if(barChart) barChart.destroy();
+if(pieChart) pieChart.destroy();
+
+barChart=new Chart(document.getElementById("barChart"),{
+type:'bar',
+data:{labels:Object.keys(counts),datasets:[{data:Object.values(counts)}]}
+});
+
+pieChart=new Chart(document.getElementById("pieChart"),{
+type:'pie',
+data:{labels:Object.keys(counts),datasets:[{data:Object.values(counts)}]}
+});
+}
+
+/* REVENUE */
+function renderRevenue(data){
+
+let total=0;
+data.forEach(d=>{ if(d.paymentId) total+=500; });
+
+if(revenueChart) revenueChart.destroy();
+
+revenueChart=new Chart(document.getElementById("revenueChart"),{
+type:'doughnut',
+data:{labels:["Revenue"],datasets:[{data:[total]}]}
+});
+}
+
+/* TREND */
+function renderTrend(data){
+
+let map={};
+
+data.forEach(d=>{
+if(!d.createdAt) return;
+let date=new Date(d.createdAt.seconds*1000).toLocaleDateString();
+map[date]=(map[date]||0)+1;
+});
+
+if(trendChart) trendChart.destroy();
+
+trendChart=new Chart(document.getElementById("trendChart"),{
+type:'line',
+data:{labels:Object.keys(map),datasets:[{data:Object.values(map)}]}
+});
+}
+
+/* EXPORT */
+function exportExcel(){
+let data=globalData.map(d=>({
+Email:d.email,
+Doctor:d.doctor,
+Date:d.date,
+Time:d.time,
+Status:d.status
+}));
+
+let ws=XLSX.utils.json_to_sheet(data);
+let wb=XLSX.utils.book_new();
+XLSX.utils.book_append_sheet(wb,ws,"Appointments");
+XLSX.writeFile(wb,"appointments.xlsx");
+}
+
+/* CALLBACKS */
+db.collection("callbacks")
+.orderBy("createdAt","desc")
+.onSnapshot(snap=>{
+let table = document.getElementById("callbackTable");
+table.innerHTML="";
+
+snap.forEach(doc=>{
+let d=doc.data();
+let date=d.createdAt?new Date(d.createdAt.seconds*1000).toLocaleString():"-";
+
+table.innerHTML+=`
+<tr>
+<td>${d.name}</td>
+<td>${d.phone}</td>
+<td>${date}</td>
+<td>
+<button onclick="callUser('${d.phone}')">Call</button>
+<button onclick="deleteCallback('${doc.id}')">Delete</button>
+</td>
+</tr>
+`;
+});
+});
+
+function callUser(phone){
+window.open(`tel:${phone}`);
+}
+
+function deleteCallback(id){
+if(confirm("Delete this request?")){
+db.collection("callbacks").doc(id).delete();
+}
+}
+
+/* MESSAGES */
+db.collection("messages")
+.orderBy("createdAt","desc")
+.onSnapshot(snap=>{
+let table = document.getElementById("messageTable");
+table.innerHTML="";
+
+snap.forEach(doc=>{
+let d=doc.data();
+let date=d.createdAt?new Date(d.createdAt.seconds*1000).toLocaleString():"-";
+
+table.innerHTML+=`
+<tr>
+<td>${d.name}</td>
+<td>${d.email}</td>
+<td>${d.message}</td>
+<td>${date}</td>
+<td>
+<button onclick="reply('${d.email}')">Reply</button>
+<button onclick="deleteMsg('${doc.id}')">Delete</button>
+</td>
+</tr>
+`;
+});
+});
+
+function deleteMsg(id){
+if(confirm("Delete this message?")){
+db.collection("messages").doc(id).delete();
+}
+}
+
+function reply(email){
+window.location.href = `mailto:${email}`;
+}
+
+/* LOGOUT */
+function logout(){
+auth.signOut();
+window.location.href="login.html";
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Admin Login - CityCare</title>
+<link rel="icon" href="images/logo.png">
+
+<style>
+body{
+font-family:'Segoe UI';
+background:linear-gradient(135deg,#5a63d8,#00c6ff);
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh;
+margin:0;
+}
+
+.container{
+width:350px;
+background:white;
+padding:30px;
+border-radius:12px;
+text-align:center;
+box-shadow:0 10px 25px rgba(0,0,0,0.2);
+}
+
+input{
+width:100%;
+padding:12px;
+margin:10px 0;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+button{
+width:100%;
+padding:12px;
+background:#5a63d8;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+font-weight:bold;
+}
+
+button:disabled{
+background:#aaa;
+}
+
+.error{
+color:red;
+display:none;
+margin-top:10px;
+font-size:14px;
+}
+
+.loader{
+display:none;
+margin-top:10px;
+color:#555;
+}
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Admin Login 🔐</h2>
+
+<input type="email" id="email" placeholder="Admin Email">
+<input type="password" id="password" placeholder="Password" onkeypress="enterLogin(event)">
+
+<button id="btn" onclick="login()">Login</button>
+
+<p class="loader" id="loader">Checking credentials...</p>
+<p class="error" id="errorMsg"></p>
+
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+<script>
+
+/* ✅ Firebase Config (UPDATED) */
+const firebaseConfig = {
+  apiKey: "AIzaSyBgpOLahDrFHB32QJu_Z7OwGhI90jB9jGE",
+  authDomain: "citycare-vishnu-2026.firebaseapp.com",
+  projectId: "citycare-vishnu-2026",
+  storageBucket: "citycare-vishnu-2026.firebasestorage.app",
+  messagingSenderId: "123554182061",
+  appId: "1:123554182061:web:b06db741f262adac67a724"
+};
+
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+
+/* ADMIN EMAIL */
+const ADMIN_EMAIL = "admin@gmail.com";
+
+/* AUTO REDIRECT */
+auth.onAuthStateChanged(user=>{
+if(user && user.email === ADMIN_EMAIL){
+window.location.href="admin.html";
+}
+});
+
+/* ENTER KEY */
+function enterLogin(e){
+if(e.key === "Enter"){
+login();
+}
+}
+
+/* LOGIN FUNCTION */
+function login(){
+
+let email = document.getElementById("email").value.trim();
+let password = document.getElementById("password").value.trim();
+let error = document.getElementById("errorMsg");
+let loader = document.getElementById("loader");
+let btn = document.getElementById("btn");
+
+error.style.display="none";
+
+/* VALIDATION */
+if(email === "" || password === ""){
+error.innerText = "Please fill all fields!";
+error.style.display = "block";
+return;
+}
+
+/* UI */
+loader.style.display="block";
+btn.disabled = true;
+
+/* LOGIN */
+auth.signInWithEmailAndPassword(email, password)
+.then(res => {
+
+if(res.user.email === ADMIN_EMAIL){
+window.location.href="admin.html";
+}else{
+error.innerText="Access denied! Not admin.";
+error.style.display="block";
+auth.signOut();
+}
+
+})
+.catch(err => {
+
+if(err.code === "auth/user-not-found"){
+error.innerText="Admin account not found";
+}
+else if(err.code === "auth/wrong-password"){
+error.innerText="Incorrect password";
+}
+else if(err.code === "auth/invalid-email"){
+error.innerText="Invalid email format";
+}
+else{
+error.innerText="Login failed. Try again.";
+}
+
+error.style.display="block";
+
+})
+.finally(()=>{
+loader.style.display="none";
+btn.disabled=false;
+});
+
+}
+
+</script>
+
+</body>
+</html>

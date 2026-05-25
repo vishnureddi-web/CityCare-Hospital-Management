@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Service Details - CityCare</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<link rel="icon" href="images/logo.png">
+
+<style>
+body{font-family:'Segoe UI',sans-serif;background:#f5f7fa;margin:0;}
+
+/* HEADER */
+.header{
+background:#0b132b;
+color:white;
+padding:30px;
+text-align:center;
+}
+
+/* IMAGE */
+.service-img{
+width:100%;
+height:260px;
+object-fit:cover;
+}
+
+/* CONTAINER */
+.container{
+max-width:1000px;
+margin:auto;
+padding:30px;
+background:white;
+margin-top:20px;
+border-radius:10px;
+box-shadow:0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* DOCTORS */
+.doctor-list{
+display:flex;
+gap:20px;
+flex-wrap:wrap;
+margin-top:20px;
+}
+
+.doctor{
+background:#f9f9f9;
+padding:15px;
+border-radius:10px;
+width:200px;
+text-align:center;
+transition:0.3s;
+}
+
+.doctor:hover{
+transform:translateY(-5px);
+}
+
+.doctor img{
+width:100%;
+border-radius:10px;
+}
+
+/* BUTTON */
+.btn{
+display:inline-block;
+margin-top:10px;
+padding:8px 15px;
+background:#5a63d8;
+color:white;
+text-decoration:none;
+border-radius:20px;
+}
+
+.error{
+text-align:center;
+color:red;
+margin-top:40px;
+font-size:18px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+<h1 id="title"></h1>
+<p id="subtitle"></p>
+</div>
+
+<img id="image" class="service-img">
+
+<div class="container">
+
+<h3>About Service</h3>
+<p id="desc"></p>
+
+<h3>Treatments</h3>
+<ul id="treatments"></ul>
+
+<h3>Our Specialists</h3>
+<div id="doctors" class="doctor-list"></div>
+
+<a href="appointment.html" class="btn">Book Appointment</a>
+
+</div>
+
+<script>
+
+/* GET SERVICE */
+let params = new URLSearchParams(window.location.search);
+let s = params.get("service");
+
+/* DATA */
+let data = {
+
+cardiology:{
+title:"Cardiology",
+subtitle:"Heart Care",
+img:"https://images.unsplash.com/photo-1588776814546-1ffcf47267a5",
+desc:"Advanced heart treatments with expert cardiologists.",
+treatments:["ECG","Angiography","Heart Surgery"],
+doctors:[
+{name:"Dr. Rajesh",img:"https://randomuser.me/api/portraits/men/32.jpg"},
+{name:"Dr. Arjun",img:"https://randomuser.me/api/portraits/men/45.jpg"}
+]
+},
+
+neurology:{
+title:"Neurology",
+subtitle:"Brain Care",
+img:"https://images.unsplash.com/photo-1581090700227-1e37b190418e",
+desc:"Brain and nervous system treatments.",
+treatments:["Stroke Care","Brain Scan"],
+doctors:[
+{name:"Dr. Priya",img:"https://randomuser.me/api/portraits/women/44.jpg"}
+]
+},
+
+dental:{
+title:"Dental Care",
+subtitle:"Smile Care",
+img:"https://images.unsplash.com/photo-1588776814546-1ffcf47267a5",
+desc:"Complete dental services.",
+treatments:["Cleaning","Root Canal"],
+doctors:[
+{name:"Dr. Rahul",img:"https://randomuser.me/api/portraits/men/55.jpg"}
+]
+},
+
+orthopedic:{
+title:"Orthopedic",
+subtitle:"Bone Care",
+img:"https://images.unsplash.com/photo-1581594693702-fbdc51b2763b",
+desc:"Bone and joint treatments.",
+treatments:["Fracture","Joint Replacement"],
+doctors:[
+{name:"Dr. Kiran",img:"https://randomuser.me/api/portraits/men/22.jpg"}
+]
+},
+
+dermatology:{
+title:"Dermatology",
+subtitle:"Skin Care",
+img:"https://images.unsplash.com/photo-1588776814546-1ffcf47267a5",
+desc:"Skin related treatments.",
+treatments:["Acne","Skin Allergy"],
+doctors:[
+{name:"Dr. Kavya",img:"https://randomuser.me/api/portraits/women/45.jpg"}
+]
+},
+
+urology:{
+title:"Urology",
+subtitle:"Urinary Care",
+img:"https://images.unsplash.com/photo-1588776814546-1ffcf47267a5",
+desc:"Urinary system treatments.",
+treatments:["Kidney Care","Bladder Treatment"],
+doctors:[
+{name:"Dr. Vinay",img:"https://randomuser.me/api/portraits/men/51.jpg"}
+]
+}
+
+};
+
+/* ERROR HANDLING */
+if(!data[s]){
+document.body.innerHTML="<div class='error'>Service not found</div>";
+throw new Error("Invalid service");
+}
+
+/* LOAD */
+let d = data[s];
+
+document.getElementById("title").innerText = d.title;
+document.getElementById("subtitle").innerText = d.subtitle;
+document.getElementById("image").src = d.img;
+document.getElementById("desc").innerText = d.desc;
+
+/* TREATMENTS */
+let t="";
+d.treatments.forEach(x=>t+=`<li>${x}</li>`);
+document.getElementById("treatments").innerHTML=t;
+
+/* DOCTORS */
+let docHTML="";
+d.doctors.forEach(doc=>{
+docHTML+=`
+<div class="doctor">
+<img src="${doc.img}">
+<h4>${doc.name}</h4>
+<a href="appointment.html" class="btn">Book</a>
+</div>`;
+});
+document.getElementById("doctors").innerHTML=docHTML;
+
+</script>
+
+<!-- Firebase (optional here) -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyBgpOLahDrFHB32QJu_Z7OwGhI90jB9jGE",
+  authDomain: "citycare-vishnu-2026.firebaseapp.com",
+  projectId: "citycare-vishnu-2026",
+  storageBucket: "citycare-vishnu-2026.firebasestorage.app",
+  messagingSenderId: "123554182061",
+  appId: "1:123554182061:web:b06db741f262adac67a724"
+};
+firebase.initializeApp(firebaseConfig);
+</script>
+
+</body>
+</html>
